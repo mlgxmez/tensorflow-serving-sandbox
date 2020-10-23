@@ -1,7 +1,0 @@
-{
-    "C_Cpp.default.includePath": [
-        "/tensorflow-serving/**",
-        "/tensorflow/**"
-    ],
-    "python.pythonPath": "/Users/guillermogomezbella/opt/anaconda3/bin/python"
-}
