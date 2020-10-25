@@ -36,8 +36,7 @@ class ImportModelHub(tf.keras.Model):
     @tf.function(input_signature=[tf.TensorSpec(shape=None, dtype=tf.string)])
     def __call__(self, x):
         def _read_image(img_file):
-            #img_bytes = tf.reshape(img_file, [])
-            img_bytes = tf.io.read_file(img_file)
+            img_bytes = tf.reshape(img_file, [])
             img = tf.io.decode_jpeg(img_bytes, channels=3)
             img = tf.image.convert_image_dtype(img, tf.float32)[tf.newaxis,...]
             return img
