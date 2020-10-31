@@ -80,6 +80,7 @@ if [ $NUM_MODELS -gt 1 ] && [ $CONTAINERS == 1 ];then
         PORT_CONTAINER=$((8501 + $COUNT))
         docker run -t --rm -p "$PORT_CONTAINER:$PORT_CONTAINER" -v "$(pwd)/models:/models" \
         -e MODEL_NAME="$model" tensorflow/serving &
+        echo "Model $model served in port $PORT_CONTAINER."
         COUNT+=1
     done
 fi
