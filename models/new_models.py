@@ -1,5 +1,6 @@
 import urllib.request
 import argparse
+import shutil
 import os
 
 import tensorflow as tf
@@ -62,7 +63,7 @@ class ImportModelHub(tf.keras.Model):
         return id_to_text
 
 
-def run(model_size, output_dir):
+def run(model_size, output_dir, del_model):
     output_dir_ = os.path.join(output_dir, MODEL_NAME)
     if not os.path.isdir(output_dir_):
         os.makedirs(output_dir_, exist_ok=True)
@@ -73,10 +74,20 @@ def run(model_size, output_dir):
     model = ImportModelHub(model_size)
     # Set incremental values of folders
     last_version += 1
-    tf.saved_model.save(model, os.path.join(output_dir,
-                                            MODEL_NAME,
-                                            str(last_version)
-                                            ))
+    save_path = os.path.join(output_dir, MODEL_NAME, str(last_version))
+    tf.saved_model.save(model, save_path)
+    if del_model:
+        subfolders_model = os.listdir(save_path)
+        if (
+            "saved_model.pb" in subfolders_model
+            and set(["assets", "variables"]) <= set(subfolders_model)
+           ):
+            print("Model '{}', version '{}'".format(MODEL_NAME, last_version),
+                  "has been saved correctly. Deleting folders...")
+        else:
+            print("An error has ocurred while saving,",
+                  "model '{}', version '{}".format(MODEL_NAME, last_version))
+        shutil.rmtree(save_path)
 
 
 if __name__ == "__main__":
@@ -88,7 +99,10 @@ if __name__ == "__main__":
                         type=str,
                         default="./models",
                         help="Output path where models are saved")
+    parser.add_argument('-d',
+                        action="store_true",
+                        help="Check for deleting a models that has been created correctly")
     args = parser.parse_args()
 
     # Run the script with proper arguments
-    run(args.size, args.output_dir)
+    run(args.size, args.output_dir, args.d)
